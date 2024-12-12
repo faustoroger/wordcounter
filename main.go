@@ -9,21 +9,26 @@ import (
 )
 
 func main() {
-	lines := flag.Bool("l", false, "Count lines")
+	countLines := flag.Bool("l", false, "Count lines")
+	countRunes := flag.Bool("r", false, "Count runes")
 	flag.Parse()
 
-	if *lines {
-		fmt.Println("The statement has", count(os.Stdin, *lines), "number of lines.")
+	if !*countLines && !*countRunes {
+		fmt.Println("The content has", count(os.Stdin, *countLines, *countRunes), "number of words.")
+	} else if *countRunes {
+		fmt.Println("The content has", count(os.Stdin, *countLines, *countRunes), "number of runes.")
 	} else {
-		fmt.Println("The statement has", count(os.Stdin, *lines), "number of words.")
+		fmt.Println("The content has", count(os.Stdin, *countLines, *countRunes), "number of lines.")
 	}
 }
 
-func count(r io.Reader, countLines bool) int {
+func count(r io.Reader, countLines bool, countRunes bool) int {
 	scanner := bufio.NewScanner(r)
 
-	if !countLines {
+	if !countLines && !countRunes {
 		scanner.Split(bufio.ScanWords)
+	} else if countRunes {
+		scanner.Split(bufio.ScanRunes)
 	}
 
 	wc := 0
